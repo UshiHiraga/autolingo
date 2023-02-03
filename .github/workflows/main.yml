@@ -5,6 +5,7 @@ on:
         branches: [master]
     pull_request:
         branches: [master]
+    workflow_dispatch:
 
 jobs:
     build-extension:
@@ -13,38 +14,38 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
-              with:
-                  ref: ${{ github.head_ref }}
-                  fetch-depth: 0
 
-            - name: Remove extra files
-              run: rm README.md TODO.md LICENSE
+            - name: Remove extra files and especific git folders
+              run: rm -rf README.md TODO.md LICENSE .git .github
 
-            - name: Remove especific git folders
-              run: rm -rf .git .github
+            - name: Get actual date for version name.
+              id: actual-date
+              run: echo "DATE=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
 
-            - name: Upload artifact
-              uses: actions/upload-artifact@v2
-              with:
-                  name: AutolingoExtension
-                  path: .
+            - name: Replace version name in manifest.json
+              run: sed -i 's/12345/${{ steps.actual-date.outputs.DATE }}/g' manifest.json
+
+            - name: Create extension's zip files
+              run: zip -r autolingo-extension-zip .
 
             - name: Create release
               id: create-release
               uses: actions/create-release@v1
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  tag_name: ${{ github.ref }}
-                  release_name: Release ${{ github.ref }}
+                  tag_name: ${{ steps.actual-date.outputs.DATE }}
+                  release_name: Version ${{ steps.actual-date.outputs.DATE }}
                   draft: true
                   prerelease: false
+                  owner: ${{ github.actor }}
 
             - name: Upload assets for release
               uses: actions/upload-release-asset@v1
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-                  asset_path: ./AutolingoExtension.zip
-                  asset_name: Autolingo.zip
+                  upload_url: ${{ steps.create-release.outputs.upload_url }}
+                  asset_path: ./autolingo-extension-zip.zip
+                  asset_name: autolingo.zip
+                  asset_content_type: application/zip
