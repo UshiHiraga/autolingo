@@ -10,16 +10,15 @@
     "background": {
         "service_worker": "background.js"
     },
-    "action": {
-        "default_popup": "popup/popup.html",
-        "default_title": "Autolingo"
-    },
     "content_scripts": [
         {
             "all_frames": true,
             "js": [
-                "content_scripts/init.js"
+                "scripts/main.js",
+                "scripts/utils.js",
+                "scripts/solver.js"
             ],
+            "world": "MAIN",
             "matches": [
                 "*://*.duolingo.com/*"
             ]
