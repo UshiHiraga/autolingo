@@ -1,0 +1,11 @@
+div._2nDUm {
+    grid-template-columns: repeat(2, min-content) 1fr;
+}
+
+div._3FHOg._2nDUm {
+    grid-template-columns: repeat(3, min-content) 1fr min-content;   
+}
+
+div._2LO8p._2nDUm {
+    grid-template-columns: repeat(3, min-content) 1fr min-content;   
+}
