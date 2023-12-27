@@ -18,6 +18,9 @@
                 "scripts/utils.js",
                 "scripts/solver.js"
             ],
+            "css": [
+                "styles/lesson.css"
+            ],
             "world": "MAIN",
             "matches": [
                 "*://*.duolingo.com/*"
@@ -35,10 +38,10 @@
     "web_accessible_resources": [
         {
             "matches": [
-                "<all_urls>"
+                "*://*.duolingo.com/*"
             ],
             "resources": [
-                "*"
+                "/images/*"
             ]
         }
     ]
