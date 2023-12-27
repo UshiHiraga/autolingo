@@ -28,6 +28,13 @@ window.getReactElement = (element) => {
     return element[key];
 }
 
+// Parse html
+window.createNodeFromText = (text) => {
+    let parent = document.createElement("section");
+    parent.innerHTML = text;
+    return parent.children[0];
+}
+
 // Watch changes in pages
 let PREVIOUS_LANGUAGE = null;
 let PREVIOUS_URL = null;
