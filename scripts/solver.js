@@ -316,12 +316,13 @@ class DuolingoChallenge {
             let content;
 
             // This is a roundabout for japanese course.
-            if (contentTagElement.tagName == "RUBY") {
-                let rb_values = contentTagElement.getElementsByTagName("rb");
-                content = Array.from(rb_values).map((e) => e.textContent).join("");
-            } else {
-                content = contentTagElement.textContent;
-            }
+            // Redo
+            // if (contentTagElement.tagName == "RUBY") {
+            //     let rb_values = contentTagElement.getElementsByTagName("rb");
+            //     content = Array.from(rb_values).map((e) => e.textContent).join("");
+            // } else {
+            content = tap_token_node.textContent;
+            // }
 
             tap_tokens[content] = tap_token_node;
         });
@@ -347,12 +348,13 @@ class DuolingoChallenge {
             let content;
 
             // This is a roundabout for japanese course.
-            if (contentTagElement.tagName == "RUBY") {
-                let rb_values = contentTagElement.getElementsByTagName("rb");
-                content = Array.from(rb_values).map((e) => e.textContent).join("");
-            } else {
-                content = contentTagElement.textContent;
-            }
+            // REDO
+            // if (contentTagElement.tagName == "RUBY") {
+            //     let rb_values = contentTagElement.getElementsByTagName("rb");
+            //     content = Array.from(rb_values).map((e) => e.textContent).join("");
+            // } else {
+            content = tap_token_node.textContent;
+            // }
 
             tap_tokens[content] = tap_token_node;
         });
