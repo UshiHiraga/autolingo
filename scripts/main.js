@@ -62,7 +62,7 @@ function LessonPage() {
                 }
             }
 
-            const status_bar_container = document.querySelector("div._2LO8p._2nDUm");
+            const status_bar_container = document.querySelector("div._2nDUm");
 
             if (!status_bar_container["autolingo_solve_button_inserted"]) {
 
