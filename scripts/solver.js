@@ -114,6 +114,9 @@ class DuolingoChallenge {
             case "characterTrace":
                 this.skip_trace();
                 break;
+            case "transliterate":
+                this.solve_transliterate();
+                break;
             default:
                 const error_string = `AUTOLINGO - UNKNOWN CHALLENGE TYPE: ${this.challenge_type}`;
                 console.logger(error_string);
@@ -139,18 +142,44 @@ class DuolingoChallenge {
         });
     };
 
+
+    insert_trasliterarion = (translation) => {
+        let challenge_translate_input = document.querySelector(
+            "[data-test='challenge-text-input']"
+        );
+        window.getReactElement(challenge_translate_input)?.pendingProps?.onChange({
+            target: { value: translation },
+        });
+    };
+
+    solve_transliterate = () => {
+        let translation = this.challenge_node.correctSolutions[0];
+        this.insert_trasliterarion(translation);
+    }
+
     // target to source AND source to target translations
     solve_translate = () => {
-        // let translation = this.challenge_node.correctSolutions[0];
-        // this.insert_translation(translation);
+        const enable_typing_node = Array.from(
+            document.querySelectorAll("div")
+        ).find((e) => {
+            return e.innerHTML.toLowerCase() === "use keyboard";
+        });
 
-        // Refactoring
-        let aaaspans = document.querySelectorAll("span[data-test='challenge-tap-token-text'");
-        let sol = this.challenge_node.correctTokens;
+        if (!enable_typing_node) {
+            // Refactoring
+            let aaaspans = document.querySelectorAll("span[data-test='challenge-tap-token-text'");
+            let sol = this.challenge_node.correctTokens;
 
-        for (let h = 0; h < sol.length; h++) {
+            for (let h = 0; h < sol.length; h++) {
 
-            Array.from(aaaspans).find((e, i) => e.innerText === sol[h]).click();
+                Array.from(aaaspans).find((e, i) => e.innerText === sol[h]).click();
+            }
+
+
+        } else {
+            let translation = this.challenge_node.correctSolutions[0];
+            this.insert_translation(translation);
+
         }
 
     };
