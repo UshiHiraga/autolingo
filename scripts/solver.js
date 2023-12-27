@@ -339,7 +339,7 @@ class DuolingoChallenge {
         let pairs = this.challenge_node.pairs;
 
         // get the nodes for all the options
-        let tap_token_nodes = document.querySelectorAll("[data-test='challenge-tap-token']");
+        let tap_token_nodes = document.querySelectorAll("[data-test='challenge-tap-token-text']");
 
         // build a map from the text content to the node
         let tap_tokens = {};
