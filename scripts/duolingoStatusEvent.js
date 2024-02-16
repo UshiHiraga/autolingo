@@ -11,7 +11,6 @@ setInterval(() => {
     const course = pageData?.courses?.find((e) => e.isCurrent)?.courseId;
 
     if (prevTab !== tab || prevCourse !== course) {
-        console.logger(tab)
         window.dispatchEvent(new CustomEvent("DuolingoRefresh", { detail: { tab, path: document.location.pathname } }));
     }
 
