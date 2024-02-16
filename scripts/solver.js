@@ -1,507 +1,168 @@
 class DuolingoChallenge {
-    constructor () {
-
-        // get the react internals for the current lesson
-        this.challenge_internals = this.get_challenge_internals();
-        console.logger(this.challenge_internals);
-
-        // make sure the keyboard is enabled so we can paste in the input box
-        // if (!this.challenge_internals.browserSettings.typingEnabled) {
-        // const enable_typing_node = Array.from(
-        //     document.querySelectorAll("div")
-        // ).find((e) => {
-        //     return e.innerHTML.toLowerCase() === "use keyboard";
-        // });
-
-        //     enable_typing_node?.click();
-        // }
-
-        // get the react internals for the current challenge
-        this.challenge_node = this.challenge_internals.currentChallenge;
-        this.skill_node = this.challenge_internals.skill;
-
-        console.logger(this.challenge_node);
-
-        // if (this.challenge_node) {
-        //     this.source_language = this.challenge_node.sourceLanguage;
-        //     this.target_language = this.challenge_node.targetLanguage;
-
-        this.challenge_type = this.challenge_node.type;
-        this.challenge_id = this.challenge_node.id;
-
-        this.click_next_count = 0;
-        this.active_click_next = undefined;
-        console.logger(this.challenge_type);
-        // }
+    constructor(internalInfo) {
+        this.challengeInfo = internalInfo;
+        this.challengeType = internalInfo.type;
     }
 
-    get_challenge_internals = () => {
-        let thisPrefixName = Object.keys(document.querySelector(".mQ0GW")).find((e) => e.includes("__reactFiber$"));
-        let challenge_elements = document.querySelector(".mQ0GW")[thisPrefixName];
-        return challenge_elements.return.return.stateNode.props;
-    };
+    static get isKeyboardEnabled() {
+        // Parent object contains several information about current duolingo status;
+        let parentObject = window.getReactElement(document.querySelector(".mQ0GW")).return.return.pendingProps.challengeToggleState;
+        return (parentObject.canToggleTyping && parentObject.isToggledToTyping)
+    }
 
-    solve() {
-        switch (this.challenge_type) {
-            case "characterMatch":
-                this.solve_character_match();
-                break;
-            case "translate":
-                this.solve_translate();
-                break;
-            case "readComprehension":
-            case "gapFill":
-            case "select":
-            case "characterSelect":
-            case "assist":
-            case "form":
-                this.solve_form();
-                break;
-            case "judge":
-                this.solve_judge();
-                break;
-            case "selectTranscription":
-                this.solve_select_transcription();
-                break;
+    static getElementsByDataTest(dataTest, parent = window.document) {
+        return Array.from(parent.querySelectorAll(`[data-test="${dataTest}"]`));
+    }
+
+    printDebugInfo() {
+        window.console.logger("challengeType: " + this.challengeType);
+    }
+
+    extractTextFromNodes(nodes) {
+        // From an array with nodes, it tries to get extract the user displayed in screen text.
+        // Then, it returns an object with the text as the key and the node as the value.
+
+        return Object.fromEntries(nodes.map((node) => {
+            let rubyNode = node.querySelector("ruby");
+            let nodeText = "";
+
+            if (rubyNode) {
+                nodeText = Array.from(rubyNode.querySelectorAll("span")).map((e) => e.textContent).join("");
+            } else {
+                let textOptionOne = this.constructor.getElementsByDataTest("challenge-tap-token-text", node)[0]?.textContent;
+                let textOptionTwo = node.querySelector("[lang]")?.textContent;
+                nodeText = textOptionOne ?? textOptionTwo;
+            }
+
+            return [nodeText, node.querySelector("button")];
+        }));
+    }
+
+    // Methods for simulating user interaction.
+    static clickButtonCheck() {
+        this.getElementsByDataTest("player-next")[0].click();
+    }
+
+    static clickButtonContinue() {
+        this.getElementsByDataTest("player-next")[0].click();
+    }
+
+    static clickButtonSkip() {
+        this.getElementsByDataTest("player-skip")[0].click();
+    }
+
+    static insertText(textFieldDataTest, value) {
+        let fieldText = this.getElementsByDataTest(textFieldDataTest)[0];
+        window.getReactElement(fieldText)?.pendingProps?.onChange({ target: { value } });
+    }
+
+    // Methods for solving the problems.
+    async solve() {
+        switch (this.challengeType) {
             case "characterIntro":
-                this.solve_select_transcription();
-                break;
+            case "characterSelect":
             case "selectPronunciation":
-                this.solve_select_transcription();
+            case "select":
+            case "assist":
+                this.solveSelectCorrectIndexTypeProblems();
                 break;
-            case "completeReverseTranslation":
-                this.solve_complete_reverse_translation();
-                break;
-            case "listen":
-            case "listenTap":
-                this.solve_listen_tap();
-                break;
-            case "name":
-                this.solve_name();
-                break;
-            case "tapCompleteTable":
-                this.solve_tap_complete_table();
-                break;
-            case "typeCompleteTable":
-                this.solve_type_complete_table();
-                break;
-            case "typeCloze":
-            case "typeClozeTable":
-                this.solve_type_complete_table();
-                break;
-            case "tapClozeTable":
-                this.solve_tap_cloze_table();
-            case "tapCloze":
-                this.solve_tap_cloze();
-                break;
-            case "tapComplete":
-                this.solve_tap_compelete();
-                break;
-            case "listenComprehension":
-                this.solve_select_transcription();
-                break;
-            case "dialogue":
-                this.click_next();
-                this.click_next();
-                this.solve_select_transcription();
-                break;
-            case "speak":
-                this.skip_speak();
-                break;
+
+            case "characterMatch":
             case "match":
-                this.solve_match();
+                this.solveCharacterMatch();
                 break;
-            case "characterTrace":
-                this.skip_trace();
+
+            case "translate":
+            case "listenTap":
+                this.constructor.isKeyboardEnabled ? this.solveWriteTextInSomeTextFieldTypeProblems() : this.solveTapTextTypeProblems();
                 break;
+
             case "transliterate":
-                this.solve_transliterate();
+                this.solveWriteTextInSomeTextFieldTypeProblems()
                 break;
+
+            case "speak":
+            case "characterTrace":
+                this.constructor.clickButtonSkip();
+                break;
+
             default:
-                const error_string = `AUTOLINGO - UNKNOWN CHALLENGE TYPE: ${this.challenge_type}`;
-                console.logger(error_string);
-                throw new Error(error_string);
-        }
-        // transliterate
-    };
-
-    skip_speak() {
-        document.querySelector("[data-test='player-skip']")?.click();
-    }
-
-    skip_trace() {
-        document.querySelector("[data-test='player-skip']")?.click();
-    }
-
-    insert_translation = (translation) => {
-        let challenge_translate_input = document.querySelector(
-            "[data-test='challenge-translate-input']"
-        );
-        window.getReactElement(challenge_translate_input)?.pendingProps?.onChange({
-            target: { value: translation },
-        });
-    };
-
-
-    insert_trasliterarion = (translation) => {
-        let challenge_translate_input = document.querySelector(
-            "[data-test='challenge-text-input']"
-        );
-        window.getReactElement(challenge_translate_input)?.pendingProps?.onChange({
-            target: { value: translation },
-        });
-    };
-
-    solve_transliterate = () => {
-        let translation = this.challenge_node.correctSolutions[0];
-        this.insert_trasliterarion(translation);
-    }
-
-    // target to source AND source to target translations
-    solve_translate = () => {
-        const enable_typing_node = Array.from(
-            document.querySelectorAll("div")
-        ).find((e) => {
-            return e.innerHTML.toLowerCase() === "use keyboard";
-        });
-
-        if (!enable_typing_node) {
-            // Refactoring
-            let aaaspans = document.querySelectorAll("span[data-test='challenge-tap-token-text'");
-            let sol = this.challenge_node.correctTokens;
-
-            for (let h = 0; h < sol.length; h++) {
-
-                Array.from(aaaspans).find((e, i) => e.innerText === sol[h]).click();
-            }
-
-
-        } else {
-            let translation = this.challenge_node.correctSolutions[0];
-            this.insert_translation(translation);
-
-        }
-
-    };
-
-    solve_listen_tap = () => {
-        let translation = this.challenge_node.prompt;
-        this.insert_translation(translation);
-    };
-
-    solve_name = () => {
-        const answer = this.challenge_node.correctSolutions[0];
-
-        const articles = this.challenge_node.articles;
-        let answer_text;
-
-        // if there are articles, find which article is the right one
-        // and click it and remove it from the answer
-        if (articles) {
-            const correct_article = articles.find((article) => {
-                return answer.startsWith(article);
-            });
-
-            // select the correct article
-            Array.from(
-                document.querySelectorAll("[data-test='challenge-judge-text']")
-            )
-                .find((e) => {
-                    return e.innerHTML === correct_article;
-                })
-                ?.click();
-
-            // get the answer without the article and enter it
-            answer_text = answer.replace(correct_article, "");
-        }
-        // if there are no articles, just write the text
-        else {
-            answer_text = answer;
-        }
-
-        let challenge_translate_input = document.querySelector(
-            "[data-test='challenge-text-input']"
-        );
-        window.getReactElement(
-            challenge_translate_input
-        )?.return?.stateNode?.props?.onChange({ target: { value: answer_text } });
-    };
-
-    solve_tap_complete_table = () => {
-        const tokens = this.challenge_node.displayTableTokens;
-
-        // get the nodes for all the options
-        const tap_token_nodes = document.querySelectorAll(
-            "[data-test='challenge-tap-token']"
-        );
-
-        // build a map from the text content to the node
-        let tap_tokens = {};
-        Array.from(tap_token_nodes).forEach((tap_token_node) => {
-            let content = tap_token_node.childNodes[0].textContent;
-            tap_tokens[content] = tap_token_node;
-        });
-
-        // for each cell in the table, see if there is a matching choice for the right answer
-        // if there is, then click on that choice
-        // this will ensure that we've clicked the answers in the right order
-        tokens.forEach((row) => {
-            row.forEach((cell) => {
-                cell = cell[0];
-                if (cell.isBlank) {
-                    const matching_choice = tap_tokens[cell.text];
-                    if (matching_choice) {
-                        matching_choice?.click();
-                    }
-                }
-            });
-        });
-    };
-
-    solve_type_complete_table = () => {
-        const blank_inputs = document.querySelectorAll("input[type=text]");
-        blank_inputs.forEach((input) => {
-            const fiber = window.getReactElement(input);
-            const answer_token = fiber?.return?.return?.return?.return?.pendingProps;
-            const answer = answer_token?.fullText?.substring(
-                answer_token?.damageStart
-            );
-            fiber?.pendingProps?.onChange({ target: { value: answer } });
-        });
-    };
-
-    solve_tap_cloze_table = () => {
-        const tokens = this.challenge_node?.displayTableTokens;
-
-        // get the nodes for all the options
-        const tap_token_nodes = document.querySelectorAll(
-            "[data-test='challenge-tap-token']"
-        );
-
-        // build a map from the text content to the node
-        let tap_tokens = {};
-        Array.from(tap_token_nodes).forEach((tap_token_node) => {
-            let content = tap_token_node?.childNodes[0]?.textContent;
-            tap_tokens[content] = tap_token_node;
-        });
-
-        // for each cell in the table, see if there is a matching choice for the right answer
-        // if there is, then click on that choice
-        // this will ensure that we've clicked the answers in the right order
-        tokens.forEach((row) => {
-            row.forEach((cell) => {
-                cell = cell[0];
-                if (cell.damageStart !== undefined) {
-                    const answer = cell.text.substring(cell.damageStart);
-                    const matching_choice = tap_tokens[answer];
-                    if (matching_choice) {
-                        matching_choice?.click();
-                    }
-                }
-            });
-        });
-    };
-
-    // matching pairs
-    solve_character_match = () => {
-        let pairs = this.challenge_node.pairs;
-
-        // get the nodes for all the options
-        let tap_token_nodes = document.querySelectorAll("[data-test='challenge-tap-token-text']");
-
-        // build a map from the text content to the node
-        let tap_tokens = {};
-        Array.from(tap_token_nodes).forEach((tap_token_node) => {
-            let contentTagElement = tap_token_node.childNodes[1];
-            let content;
-
-            // This is a roundabout for japanese course.
-            // Redo
-            // if (contentTagElement.tagName == "RUBY") {
-            //     let rb_values = contentTagElement.getElementsByTagName("rb");
-            //     content = Array.from(rb_values).map((e) => e.textContent).join("");
-            // } else {
-            content = tap_token_node.textContent;
-            // }
-
-            tap_tokens[content] = tap_token_node;
-        });
-
-        // for each pair, click both tokens
-        pairs.forEach((pair) => {
-            tap_tokens[pair.character]?.click();
-            tap_tokens[pair.transliteration]?.click();
-        });
-    };
-
-    // matching pairs
-    solve_match = () => {
-        let pairs = this.challenge_node.pairs;
-
-        // get the nodes for all the options
-        let tap_token_nodes = document.querySelectorAll("[data-test='challenge-tap-token-text']");
-
-        // build a map from the text content to the node
-        let tap_tokens = {};
-        Array.from(tap_token_nodes).forEach((tap_token_node) => {
-            let contentTagElement = tap_token_node.childNodes[1];
-            let content;
-
-            // This is a roundabout for japanese course.
-            // REDO
-            // if (contentTagElement.tagName == "RUBY") {
-            //     let rb_values = contentTagElement.getElementsByTagName("rb");
-            //     content = Array.from(rb_values).map((e) => e.textContent).join("");
-            // } else {
-            content = tap_token_node.textContent;
-            // }
-
-            tap_tokens[content] = tap_token_node;
-        });
-
-        // for each pair, click both tokens
-        pairs.forEach((pair) => {
-            tap_tokens[pair.learningToken]?.click();
-            tap_tokens[pair.fromToken]?.click();
-        });
-    };
-
-    solve_form = () => {
-        let correct_index = this.challenge_node.correctIndex;
-        this.choose_index("[data-test='challenge-choice']", correct_index);
-    };
-
-    solve_judge = () => {
-        let correct_index = this.challenge_node.correctIndices[0];
-        this.choose_index("[data-test='challenge-judge-text']", correct_index);
-    };
-
-    solve_select_transcription = () => {
-        let correct_index = this.challenge_node.correctIndex;
-        this.choose_index("[data-test='challenge-judge-text']", correct_index);
-    };
-
-    solve_complete_reverse_translation = () => {
-        let challenge_translate_inputs = Array.from(
-            document.querySelectorAll("[data-test='challenge-text-input']")
-        );
-
-        this.challenge_node.displayTokens.forEach((token) => {
-            if (token.isBlank) {
-                const answer = token.text;
-                const challenge_translate_input = challenge_translate_inputs.shift();
-                window.getReactElement(
-                    challenge_translate_input
-                )?.return?.stateNode?.props?.onChange({ target: { value: answer } });
-            }
-        });
-    };
-
-    solve_tap_cloze = () => {
-        // get the nodes for all the options
-        const tap_token_nodes = document.querySelectorAll(
-            "[data-test='challenge-tap-token']"
-        );
-
-        // build a map from the text content to the node
-        let tap_tokens = {};
-        Array.from(tap_token_nodes).forEach((tap_token_node) => {
-            let content = tap_token_node.childNodes[0].textContent;
-            tap_tokens[content] = tap_token_node;
-        });
-
-        // for each token
-        this.challenge_node.displayTokens.forEach((answer_token) => {
-            // if it requires an answer
-            if (answer_token.damageStart !== undefined) {
-                // get the text for the answer
-                let answer = answer_token.text.substring(answer_token.damageStart);
-
-                // and click the right tap token
-                tap_tokens[answer]?.click();
-            }
-        });
-    };
-
-    solve_tap_compelete = () => {
-        // get the nodes for all the options
-        const tap_token_nodes = document.querySelectorAll(
-            "[data-test='challenge-tap-token']"
-        );
-
-        // build a map from the text content to the node
-        let tap_tokens = {};
-        Array.from(tap_token_nodes).forEach((tap_token_node) => {
-            let content = tap_token_node.childNodes[0].textContent;
-            tap_tokens[content] = tap_token_node;
-        });
-
-        // click on the right answers in the right order
-        this.challenge_node.displayTokens.forEach((token) => {
-            if (token.isBlank) {
-                tap_tokens[token.text]?.click();
-            }
-        });
-    };
-
-    choose_index = (query_selector, correct_index) => {
-        let choices = document.querySelectorAll(query_selector);
-        if (correct_index >= choices.length) {
-            correct_index = choices.length - 1;
-        }
-
-        choices[correct_index]?.click();
-    };
-
-    click_next = () => {
-        // increase the count
-        this.click_next_count++;
-
-        // if we're not handling a click-next, handle this one!
-        if (!this.active_click_next) {
-            this.set_click_next_interval();
-            this.active_click_next = true;
-        }
-    };
-
-    set_click_next_interval = () => {
-        // keep trying to click the 'next' button until something happens
-        this.click_next_interval = setInterval(() => {
-            // console.logger('trying to click next...')
-            let player_next_button = document.querySelector(
-                "[data-test='player-next']"
-            );
-
-            // if we can click the button...
-            if (
-                player_next_button &&
-                !player_next_button.disabled &&
-                player_next_button.getAttribute("aria-disabled") === "false"
-            ) {
-                // click it! and decrease the count
-                player_next_button?.click();
-                this.click_next_count--;
-
-                // stop checking to click for THIS button
-                clearInterval(this.click_next_interval);
-
-                // if we have more to click, start the next one!
-                if (this.click_next_count > 0) {
-                    this.active_click_next = true;
-                    this.set_click_next_interval();
-                } else {
-                    this.active_click_next = false;
-                }
-            }
-        }, 1);
-    };
-
-    // clean-up: end the active intervals
-    end() {
-        if (this.click_next_interval) {
-            clearInterval(this.click_next_interval);
+                alert("Unknown problem type: " + this.challengeType);
+                throw new Error(this.challengeType)
         }
     }
+
+    solveSelectCorrectIndexTypeProblems() {
+        // This method clicks the correct button from an array of possible buttons.
+        // It uses the "data-test" attribute to identify possible buttons.
+
+        const dataTestByChallengeType = {
+            "characterIntro": "challenge-judge-text",
+            "characterSelect": "challenge-choice",
+            "selectPronunciation": "challenge-choice",
+            "select": "challenge-choice",
+            "assist": "challenge-choice"
+        }
+
+        let correctIndex = this.challengeInfo.correctIndex;
+        let dataTest = dataTestByChallengeType[this.challengeType];
+        this.constructor.getElementsByDataTest(dataTest)[correctIndex].click();
+    }
+
+    solveWriteTextInSomeTextFieldTypeProblems() {
+        // This method inserts a text inside some valid text field.
+        // It uses "data-test" attribute to identify the text field.
+
+        let specificTypeProblem = this.challengeInfo.challengeGeneratorIdentifier.specificType;
+        let solution = (() => {
+            switch (specificTypeProblem) {
+                case "tap":
+                case "listen_tap":
+                    return this.challengeInfo.prompt;
+
+                case "reverse_tap":
+                case "transliterate":
+                    return this.challengeInfo.correctSolutions[0];
+
+                default:
+                    alert("Unknown translate problem type: " + this.specificTranslateType);
+                    throw new Error(this.specificTranslateType);
+            }
+        })();
+
+        const dataTextByChallengeType = {
+            "translate": "challenge-translate-input",
+            "listenTap": "challenge-translate-input",
+            "transliterate": "challenge-text-input"
+        }
+
+        let dataTest = dataTextByChallengeType[this.challengeType];
+        this.constructor.insertText(dataTest, solution);
+    }
+
+    solveTapTextTypeProblems() {
+        let correctTokens = this.challengeInfo.correctTokens ?? this.challengeInfo.prompt.split("");
+        let tapTokens = Array.from(document.querySelectorAll("._1deIS"));
+        let tokensText = this.extractTextFromNodes(tapTokens);
+        correctTokens.forEach(async (token) => {
+            await sleep();
+            tokensText[token].click();
+        });
+    }
+
+    solveCharacterMatch() {
+        let optionNodes = Array.from(document.querySelectorAll("._1deIS"));
+
+        let pairsNodeText = this.extractTextFromNodes(optionNodes);
+
+        let solutionPairs = this.challengeInfo.pairs;
+
+        solutionPairs.forEach(async (pair) => {
+            pairsNodeText[pair.character]?.click();
+            await sleep();
+            pairsNodeText[pair.transliteration]?.click();
+        });
+
+    }
+
 }
-
-alert("Hola");
