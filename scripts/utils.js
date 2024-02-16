@@ -28,31 +28,14 @@ window.getReactElement = (element) => {
     return element[key];
 }
 
+// Sleep method
+window.sleep = (delay = 50) => {
+    return new Promise((res, rej) => setTimeout(res, delay));
+}
+
 // Parse html
 window.createNodeFromText = (text) => {
     let parent = document.createElement("section");
     parent.innerHTML = text;
     return parent.children[0];
 }
-
-// Watch changes in pages
-let PREVIOUS_LANGUAGE = null;
-let PREVIOUS_URL = null;
-
-setInterval(() => {
-    // get the current language from the page
-    const MAIN_PAGE_ELEMENT = document.querySelector("._3BJQ_");
-    const page_data = window.getReactElement(MAIN_PAGE_ELEMENT)?.return?.return?.return?.memoizedProps;
-
-    const current_language = page_data?.courses?.find((e) => e.isCurrent)?.learningLanguageId;
-    const current_url = document.location.href;
-    const current_path = document.location.pathname;
-
-    if (PREVIOUS_LANGUAGE !== current_language || PREVIOUS_URL !== current_url) {
-        let eventH = new CustomEvent("DuoligoRefresh", { detail: { current_language, current_url, current_path } });
-        window.dispatchEvent(eventH);
-    }
-
-    PREVIOUS_LANGUAGE = current_language;
-    PREVIOUS_URL = current_url;
-}, 1000);
