@@ -14,9 +14,11 @@
         {
             "all_frames": true,
             "js": [
-                "scripts/main.js",
                 "scripts/utils.js",
-                "scripts/solver.js"
+                "scripts/solver.js",
+                "scripts/duolingoStatusEvent.js",
+                "scripts/pageController/mainPage.js",
+                "scripts/pageController/lessonPage.js"
             ],
             "css": [
                 "styles/lesson.css"
