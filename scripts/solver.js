@@ -35,7 +35,7 @@ class DuolingoChallenge {
                 nodeText = textOptionOne ?? textOptionTwo;
             }
 
-            return [nodeText, node.querySelector("button")];
+            return [nodeText, node];
         }));
     }
 
