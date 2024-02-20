@@ -15,7 +15,7 @@ window.getReactElement = (element) => {
 }
 
 // Sleep method
-window.sleep = (delay = 50) => { return new Promise((res, rej) => setTimeout(res, delay)) }
+window.sleep = (delay = 0) => { return new Promise((res, rej) => setTimeout(res, delay)) }
 
 // Parse html
 window.createNodeFromText = (text) => {
