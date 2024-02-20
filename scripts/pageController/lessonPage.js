@@ -9,14 +9,13 @@ window.addEventListener("DuolingoRefresh", function (e) {
     // Watch the change in the status of the challenge.
     let prevLessonStatus = undefined;
     window.activeInterval = window.setInterval(function () {
-        console.logger("aa");
         let currentStatus = window.getReactElement(document.querySelector("._3x0ok"))?.return?.stateNode?.props?.player?.status;
         if (prevLessonStatus === currentStatus) return;
 
         prevLessonStatus = currentStatus;
         let eventInfo = new CustomEvent("LessonStatusChanged", { detail: { currentStatus } });
         return window.dispatchEvent(eventInfo);
-    }, 50);
+    }, 10);
 });
 
 window.addEventListener("LessonStatusChanged", async function (e) {
@@ -26,42 +25,49 @@ window.addEventListener("LessonStatusChanged", async function (e) {
                 let challengeInternalInfo = window.getReactElement(document.querySelector(".mQ0GW")).return.return.stateNode.props.currentChallenge;
                 let currentChallange = new DuolingoChallenge(challengeInternalInfo);
                 currentChallange.printDebugInfo();
-                await sleep();
-                currentChallange.solve();
 
-                await sleep(2100);
+                await currentChallange.solve();
+                await sleep();
                 DuolingoChallenge.clickButtonCheck();
             }
 
             // Insert solve this problem button.
             const progressBarContainer = document.querySelector("div._2nDUm");
             if (!progressBarContainer["autolingo_solve_button_inserted"]) {
-                let button = window.createNodeFromText(/*html*/`<button class="_2l-C- _2kfEr _1nlVc _2fOC9 UCrz7 t5wFJ" title="Solve this problem" />`);
+                console.logger("Button inserted");
+                let button = window.createNodeFromText(/*html*/`<button class="_2l-C- _2kfEr _1nlVc _2fOC9 UCrz7 t5wFJ solve-button" title="Solve this problem" />`);
                 button.addEventListener("click", handleSolve);
                 progressBarContainer.insertBefore(button, progressBarContainer.querySelector("div[role='progressbar']"));
                 progressBarContainer["autolingo_solve_button_inserted"] = true;
             };
 
-            if (document.location.search.includes("autosolve") && !window.solvingInProcess) { handleSolve(); window.solvingInProcess = true; };
-
+            if (document.location.search.includes("autosolve")) { handleSolve() };
             break;
 
         case "BLAMING":
         case "COACH_DUO":
+        case "HARD_MODE_DUO":
             if (document.location.search.includes("autosolve")) {
-                await sleep(2000);
+                await sleep();
                 DuolingoChallenge.clickButtonContinue();
-                return handleSolve();
             }
             break;
 
         case "COACH_DUO_SLIDING":
         case "SLIDING":
-            await sleep(1000);
+        case "HARD_MODE_DUO_SLIDING":
+        case "SUBMITTING":
+            console.logger("Waiting...");
+            break;
+
+        case "END_CAROUSEL":
+            if (document.location.search.includes("repeat")) {
+                await sleep();
+                location.reload();
+            }
             break;
 
         default:
             console.logger("Unknown lesson status: " + e.detail.currentStatus);
-            throw new Error();
     }
 })
