@@ -16,6 +16,7 @@ class DuolingoChallenge {
 
     printDebugInfo() {
         window.console.logger("challengeType: " + this.challengeType);
+        window.console.logger(this.challengeInfo);
     }
 
     extractTextFromNodes(nodes) {
