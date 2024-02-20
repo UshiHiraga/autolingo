@@ -1,5 +1,5 @@
 class DuolingoChallenge {
-    constructor(internalInfo) {
+    constructor (internalInfo) {
         this.challengeInfo = internalInfo;
         this.challengeType = internalInfo.type;
     }
@@ -76,7 +76,7 @@ class DuolingoChallenge {
 
             case "translate":
             case "listenTap":
-                this.constructor.isKeyboardEnabled ? this.solveWriteTextInSomeTextFieldTypeProblems() : this.solveTapTextTypeProblems();
+                this.constructor.isKeyboardEnabled ? this.solveWriteTextInSomeTextFieldTypeProblems() : await this.solveTapTextTypeProblems();
                 break;
 
             case "transliterate":
@@ -144,29 +144,31 @@ class DuolingoChallenge {
         this.constructor.insertText(dataTest, solution);
     }
 
-    solveTapTextTypeProblems() {
+    async solveTapTextTypeProblems() {
+        // This method clicks the correct button from an array of possible buttons in the order required.
+        // It uses the "._3CBig" class to identify possible buttons.
+
         let correctTokens = this.challengeInfo.correctTokens ?? this.challengeInfo.prompt.split("");
-        let tapTokens = Array.from(document.querySelectorAll("._1deIS"));
-        let tokensText = this.extractTextFromNodes(tapTokens);
-        correctTokens.forEach(async (token) => {
-            await sleep();
+        let wordBank = this.constructor.getElementsByDataTest("word-bank")[0];
+        for (let token of correctTokens) {
+            let avaibleButtons = Array.from(wordBank.querySelectorAll("._3CBig"));
+            let tokensText = this.extractTextFromNodes(avaibleButtons);
+
             tokensText[token].click();
-        });
+            await sleep();
+        }
     }
 
-    solveCharacterMatch() {
+    async solveCharacterMatch() {
         let optionNodes = Array.from(document.querySelectorAll("._1deIS"));
-
         let pairsNodeText = this.extractTextFromNodes(optionNodes);
-
         let solutionPairs = this.challengeInfo.pairs;
 
-        solutionPairs.forEach(async (pair) => {
+        for (let pair of solutionPairs) {
             pairsNodeText[pair.character]?.click();
             await sleep();
             pairsNodeText[pair.transliteration]?.click();
-        });
-
+            await sleep();
+        }
     }
-
 }
