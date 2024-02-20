@@ -9,3 +9,7 @@ div._3FHOg._2nDUm {
 div._2LO8p._2nDUm {
     grid-template-columns: repeat(3, min-content) 1fr min-content;   
 }
+
+button.solve-button {
+    filter: hue-rotate(180deg);
+}
