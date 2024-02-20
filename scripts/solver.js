@@ -65,6 +65,7 @@ class DuolingoChallenge {
             case "selectPronunciation":
             case "select":
             case "assist":
+            case "gapFill":
                 this.solveSelectCorrectIndexTypeProblems();
                 break;
 
@@ -93,7 +94,7 @@ class DuolingoChallenge {
         }
     }
 
-    solveSelectCorrectIndexTypeProblems() {
+    async solveSelectCorrectIndexTypeProblems() {
         // This method clicks the correct button from an array of possible buttons.
         // It uses the "data-test" attribute to identify possible buttons.
 
@@ -102,12 +103,14 @@ class DuolingoChallenge {
             "characterSelect": "challenge-choice",
             "selectPronunciation": "challenge-choice",
             "select": "challenge-choice",
-            "assist": "challenge-choice"
+            "assist": "challenge-choice",
+            "gapFill": "challenge-choice"
         }
 
         let correctIndex = this.challengeInfo.correctIndex;
         let dataTest = dataTestByChallengeType[this.challengeType];
         this.constructor.getElementsByDataTest(dataTest)[correctIndex].click();
+        await sleep();
     }
 
     solveWriteTextInSomeTextFieldTypeProblems() {
