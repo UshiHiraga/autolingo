@@ -3,17 +3,12 @@
 
 let prevCourse = null;
 let prevTab = null;
-
-setInterval(() => {
-    // Get general info from user.
+setInterval(function () {
     const pageData = window.getReactElement(document.querySelector("._3BJQ_"))?.return?.return?.return?.memoizedProps;
     const tab = pageData?.activeTab ?? "unknown";
     const course = pageData?.courses?.find((e) => e.isCurrent)?.courseId;
 
-    if (prevTab !== tab || prevCourse !== course) {
-        window.dispatchEvent(new CustomEvent("DuolingoRefresh", { detail: { tab, path: document.location.pathname } }));
-    }
-
+    if (prevTab !== tab || prevCourse !== course) { window.dispatchEvent(new CustomEvent("DuolingoRefresh", { detail: { tab, path: document.location.pathname } })) };
     prevCourse = course;
     prevTab = tab;
-}, 50);
+}, 10);
