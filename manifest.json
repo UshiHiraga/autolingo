@@ -17,8 +17,7 @@
                 "scripts/utils.js",
                 "scripts/solver.js",
                 "scripts/duolingoStatusEvent.js",
-                "scripts/pageController/mainPage.js",
-                "scripts/pageController/lessonPage.js"
+                "scripts/lessonPage.js"
             ],
             "css": [
                 "styles/lesson.css"

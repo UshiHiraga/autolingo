@@ -19,6 +19,7 @@ window.addEventListener("DuolingoRefresh", function (e) {
 });
 
 window.addEventListener("LessonStatusChanged", async function (e) {
+    console.logger(e.detail.currentStatus);
     switch (e.detail.currentStatus) {
         case "GUESSING":
             async function handleSolve() {
@@ -31,40 +32,51 @@ window.addEventListener("LessonStatusChanged", async function (e) {
                 DuolingoChallenge.clickButtonCheck();
             }
 
-            // Insert solve this problem button.
+            function handleAutosolveRequest() {
+                confirm("Relaod page for start the autosolving?") ? location.assign(location.pathname + "?autosolve=true") : null;
+            }
+
+            // Insert button for autosolve lesson.
             const progressBarContainer = document.querySelector("div._2nDUm");
             if (!progressBarContainer["autolingo_solve_button_inserted"]) {
                 console.logger("Button inserted");
-                let button = window.createNodeFromText(/*html*/`<button class="_2l-C- _2kfEr _1nlVc _2fOC9 UCrz7 t5wFJ solve-button" title="Solve this problem" />`);
-                button.addEventListener("click", handleSolve);
+                let button = window.createNodeFromText(/*html*/`<button class="_2l-C- _2kfEr _1nlVc _2fOC9 UCrz7 t5wFJ autolingo-autosolve" title="Start autosolving" />`);
+                button.addEventListener("click", handleAutosolveRequest);
                 progressBarContainer.insertBefore(button, progressBarContainer.querySelector("div[role='progressbar']"));
                 progressBarContainer["autolingo_solve_button_inserted"] = true;
             };
 
-            if (document.location.search.includes("autosolve")) { handleSolve() };
+            // Insert button for solve this problem.
+            const footer = document.querySelector("div._3FAc4._2T5D2");
+            const buttonContainer = document.querySelector("div._2XF-t") ?? footer.insertBefore(window.createNodeFromText(`<div class="_2XF-t hiddeable"></div>`), footer.firstElementChild);
+            let solveButton = window.createNodeFromText(`<button class="_1N-oo _36Vd3 _16r-S J51YJ U1P3s autolingo-solve"><span class="_1fHYG">Solve</span></button>`);
+            solveButton.addEventListener("click", handleSolve);
+            if (!document.location.pathname.includes("legendary") || !progressBarContainer["solve_button_inserted"]) {
+                buttonContainer.appendChild(solveButton);
+                progressBarContainer["solve_button_inserted"] = true;
+            }
+
+            if (document.location.search.includes("autosolve")) { await sleep(); handleSolve() };
             break;
 
         case "BLAMING":
         case "COACH_DUO":
         case "HARD_MODE_DUO":
-            if (document.location.search.includes("autosolve")) {
-                await sleep();
-                DuolingoChallenge.clickButtonContinue();
-            }
+        case "LEGENDARY_DUO":
+        case "PARTIAL_XP_DUO":
+            if (document.location.search.includes("autosolve")) { await sleep(); DuolingoChallenge.clickButtonContinue() };
             break;
 
         case "COACH_DUO_SLIDING":
         case "SLIDING":
         case "HARD_MODE_DUO_SLIDING":
         case "SUBMITTING":
+        case "PARTIAL_XP_DUO_SLIDING":
             console.logger("Waiting...");
             break;
 
         case "END_CAROUSEL":
-            if (document.location.search.includes("repeat")) {
-                await sleep();
-                location.reload();
-            }
+            if (document.location.search.includes("repeat")) { await sleep(); location.reload() };
             break;
 
         default:
