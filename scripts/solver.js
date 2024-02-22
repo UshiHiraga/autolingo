@@ -1,5 +1,5 @@
 class DuolingoChallenge {
-    constructor (internalInfo) {
+    constructor(internalInfo) {
         this.challengeInfo = internalInfo;
         this.challengeType = internalInfo.type;
     }
@@ -71,7 +71,7 @@ class DuolingoChallenge {
 
             case "characterMatch":
             case "match":
-                this.solveCharacterMatch();
+                await this.solveCharacterMatch();
                 break;
 
             case "translate":
@@ -80,12 +80,17 @@ class DuolingoChallenge {
                 break;
 
             case "transliterate":
-                this.solveWriteTextInSomeTextFieldTypeProblems()
+                this.solveWriteTextInSomeTextFieldTypeProblems();
                 break;
 
             case "speak":
-            case "characterTrace":
+                await sleep();
                 this.constructor.clickButtonSkip();
+                break;
+
+            case "characterTrace":
+                alert("The extension can't solve this problem. Please do it manually and we'll be able to continue.");
+                console.logger("Waiting for user interaction");
                 break;
 
             default:
