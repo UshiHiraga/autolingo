@@ -165,14 +165,16 @@ class DuolingoChallenge {
     }
 
     async solveCharacterMatch() {
-        let optionNodes = Array.from(document.querySelectorAll("._1deIS"));
-        let pairsNodeText = this.extractTextFromNodes(optionNodes);
+        // This method clicks the correct button from two arrays of possible buttons in the order required.
+        // It uses the "._33Jbm" class to identify possible buttons.
         let solutionPairs = this.challengeInfo.pairs;
-
         for (let pair of solutionPairs) {
-            pairsNodeText[pair.character]?.click();
+            let optionNodes = Array.from(document.querySelectorAll("._1deIS button:not(._33Jbm)"));
+            let pairsNodeText = this.extractTextFromNodes(optionNodes);
+
+            pairsNodeText[pair.fromToken ?? pair.transliteration].click();
             await sleep();
-            pairsNodeText[pair.transliteration]?.click();
+            pairsNodeText[pair.learningToken ?? pair.character].click();
             await sleep();
         }
     }
