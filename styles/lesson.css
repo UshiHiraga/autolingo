@@ -1,15 +1,29 @@
-div._2nDUm {
+div._2nDUm:has(button.autolingo-autosolve) {
+    /* Top info bar with no hearts nor extra buttons */
+    /* path: alphabets */
     grid-template-columns: repeat(2, min-content) 1fr;
 }
 
-div._3FHOg._2nDUm {
-    grid-template-columns: repeat(3, min-content) 1fr min-content;   
+div._2nDUm._3FHOg:has(button.autolingo-autosolve) {
+    /* Top info bar with visible hearts. */
+    /* path: lesson, legendary */
+    grid-template-columns: repeat(3, min-content) 1fr min-content;
 }
 
-div._2LO8p._2nDUm {
-    grid-template-columns: repeat(3, min-content) 1fr min-content;   
+div._2nDUm._2LO8p:has(button.autolingo-autosolve) {
+    /* Top info bar with no hearts. */
+    /* path: practice */
+    grid-template-columns: repeat(3, min-content) 1fr min-content;
 }
 
-button.solve-button {
-    filter: hue-rotate(180deg);
+div.YQ0lZ._3e9O1 div.hiddeable {
+    display: none;
+}
+
+button.autolingo-autosolve {
+    filter: invert(1);
+}
+
+button.autolingo-solve {
+    margin-top: 10px;
 }
