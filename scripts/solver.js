@@ -91,6 +91,7 @@ class DuolingoChallenge {
                 break;
 
             case "characterTrace":
+            case "characterWrite":
                 alert("The extension can't solve this problem. Please do it manually and we'll be able to continue.");
                 console.logger("Waiting for user interaction");
                 break;
