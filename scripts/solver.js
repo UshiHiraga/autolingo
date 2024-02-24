@@ -66,6 +66,7 @@ class DuolingoChallenge {
             case "select":
             case "assist":
             case "gapFill":
+            case "reverseAssist":
                 this.solveSelectCorrectIndexTypeProblems();
                 break;
 
@@ -109,7 +110,8 @@ class DuolingoChallenge {
             "selectPronunciation": "challenge-choice",
             "select": "challenge-choice",
             "assist": "challenge-choice",
-            "gapFill": "challenge-choice"
+            "gapFill": "challenge-choice",
+            "reverseAssist": "challenge-choice"
         }
 
         let correctIndex = this.challengeInfo.correctIndex;
