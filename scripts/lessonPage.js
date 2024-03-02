@@ -66,6 +66,7 @@ window.addEventListener("LessonStatusChanged", async function (e) {
         case "PARTIAL_XP_DUO":
         case "CAPSTONE_REVIEW_SPLASH":
         case "COACH_DUO_SPLASH":
+        case "VISIBLE_PERSONALIZATION_SPLASH":
             if (document.location.search.includes("autosolve")) { await sleep(); DuolingoChallenge.clickButtonContinue() };
             break;
 
