@@ -60,6 +60,8 @@ class DuolingoChallenge {
     // Methods for solving the problems.
     async solve() {
         switch (this.challengeType) {
+            case "dialogue":
+            case "readComprehension":
             case "characterIntro":
             case "characterSelect":
             case "selectPronunciation":
@@ -74,7 +76,8 @@ class DuolingoChallenge {
                 await this.solveCharacterMatch();
                 break;
 
-            case "translate":
+            case "read_comprehension":
+            // case "translate":
             case "listenTap":
                 this.constructor.isKeyboardEnabled ? this.solveWriteTextInSomeTextFieldTypeProblems() : await this.solveTapTextTypeProblems();
                 break;
@@ -93,28 +96,64 @@ class DuolingoChallenge {
                 console.logger("Waiting for user interaction");
                 break;
 
+            case "listenComprehension":
+            case "listenIsolation":
+                await this.solveListenIsolation();
+                break;
+
+            case "completeReverseTranslation":
+            case "listen":
+                this.writeTextInSpace();
+                break;
+
             default:
                 alert("Unknown problem type: " + this.challengeType);
                 throw new Error(this.challengeType)
         }
     }
 
+    async solveListenIsolation() {
+        let correctIndex = this.challengeInfo.correctIndex;
+        let correctButton = parent.document.querySelectorAll("._3C_oC")[correctIndex];
+        correctButton.click();
+        await sleep();
+    }
+
+    writeTextInSpace() {
+        let textField = this.constructor.getElementsByDataTest("challenge-translate-input")[0];
+        if(!textField) parent.getElementsByClassName("_1eJKW _16r-S _29cJe")[0].click();
+
+        let bestSolution = this.challengeInfo.challengeResponseTrackingProperties.best_solution;
+        textField = this.constructor.getElementsByDataTest("challenge-translate-input")[0]
+        
+
+        window.getReactElement(textField)?.pendingProps?.onChange({ target: { value: bestSolution } });
+    }
+
     async solveSelectCorrectIndexTypeProblems() {
         // This method clicks the correct button from an array of possible buttons.
         // It uses the "data-test" attribute to identify possible buttons.
-
         const dataTestByChallengeType = {
             "characterIntro": "challenge-judge-text",
             "characterSelect": "challenge-choice",
             "selectPronunciation": "challenge-choice",
             "select": "challenge-choice",
             "assist": "challenge-choice",
-            "gapFill": "challenge-choice"
+            "gapFill": "challenge-choice",
+            "dialogue": "challenge-choice",
+            "readComprehension": "challenge-choice"
         }
 
         let correctIndex = this.challengeInfo.correctIndex;
+        console.log(correctIndex)
         let dataTest = dataTestByChallengeType[this.challengeType];
         this.constructor.getElementsByDataTest(dataTest)[correctIndex].click();
+        await sleep();
+    }
+
+    async solveFromCorrectIndicies() {
+        let correctIndex = this.challengeInfo.correctIndices;
+        console.log(correctIndex)
         await sleep();
     }
 
