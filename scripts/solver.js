@@ -113,6 +113,11 @@ class DuolingoChallenge {
                 this.solveFromNearbyElementsButForPartialReverseTranslate();
                 break;
 
+            //TODO: This is only commented because I don't have any problem to test it with
+            // case "typeCloze":
+            //     this.solveFromNearbyElementsButForTypeCloze();
+            //     break;
+
             default:
                 alert("Unknown problem type: " + this.challengeType);
                 throw new Error(this.challengeType)
@@ -132,6 +137,23 @@ class DuolingoChallenge {
         // Dispatch the event
         inputElement.dispatchEvent(event);
     }
+
+    solveFromNearbyElementsButForTypeCloze() {
+        let correctAnswer = parent.document.querySelector(".caPDQ").textContent
+        //remove first character
+        correctAnswer = correctAnswer.substring(1, correctAnswer.length);
+        let inputElement = parent.document.querySelector(".Y5JxA._17nEt");
+        inputElement.textContent = correctAnswer;
+
+        // Create a new 'input' event
+        let event = new Event('input', {
+            bubbles: true,
+            cancelable: true,
+        });
+
+        // Dispatch the event
+        inputElement.dispatchEvent(event);
+    } 
 
     solveFromNearbyElements() {
         let correctAnswer = parent.document.querySelector(".caPDQ").textContent
@@ -171,7 +193,6 @@ class DuolingoChallenge {
         }
 
         let correctIndex = this.challengeInfo.correctIndex;
-        console.log(correctIndex)
         let dataTest = dataTestByChallengeType[this.challengeType];
         this.constructor.getElementsByDataTest(dataTest)[correctIndex].click();
         await sleep();
@@ -179,7 +200,6 @@ class DuolingoChallenge {
 
     async solveFromCorrectIndicies() {
         let correctIndex = this.challengeInfo.correctIndices;
-        console.log(correctIndex)
         await sleep();
     }
 
