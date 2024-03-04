@@ -7,7 +7,7 @@ class DuolingoChallenge {
     static get isKeyboardEnabled() {
         // Parent object contains several information about current duolingo status;
         let parentObject = window.getReactElement(document.querySelector(".mQ0GW")).return.return.pendingProps.challengeToggleState;
-        return (parentObject.canToggleTyping && parentObject.isToggledToTyping)
+        return (parentObject.isToggledToTyping)
     }
 
     static getElementsByDataTest(dataTest, parent = window.document) {
@@ -105,6 +105,7 @@ class DuolingoChallenge {
                 this.writeTextInSpace();
                 break;
 
+            case "listenComplete":
             case "completeReverseTranslation":
                 this.solveFromNearbyElements();
                 break;
@@ -177,6 +178,7 @@ class DuolingoChallenge {
                     return this.challengeInfo.prompt;
 
                 case "reverse_tap":
+                case "reverse_translate":
                 case "transliterate":
                     return this.challengeInfo.correctSolutions[0];
 
@@ -189,7 +191,8 @@ class DuolingoChallenge {
         const dataTextByChallengeType = {
             "translate": "challenge-translate-input",
             "listenTap": "challenge-translate-input",
-            "transliterate": "challenge-text-input"
+            "transliterate": "challenge-text-input",
+            "reverse_translate": "challenge-translate-input",
         }
 
         let dataTest = dataTextByChallengeType[this.challengeType];
