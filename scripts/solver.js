@@ -77,7 +77,7 @@ class DuolingoChallenge {
                 break;
 
             case "read_comprehension":
-            // case "translate":
+            case "translate":
             case "listenTap":
                 this.constructor.isKeyboardEnabled ? this.solveWriteTextInSomeTextFieldTypeProblems() : await this.solveTapTextTypeProblems();
                 break;
@@ -101,15 +101,28 @@ class DuolingoChallenge {
                 await this.solveListenIsolation();
                 break;
 
-            case "completeReverseTranslation":
             case "listen":
                 this.writeTextInSpace();
+                break;
+
+            case "completeReverseTranslation":
+                this.solveFromNearbyElements();
                 break;
 
             default:
                 alert("Unknown problem type: " + this.challengeType);
                 throw new Error(this.challengeType)
         }
+    }
+
+    solveFromNearbyElements() {
+        let correctAnswer = parent.document.querySelector(".caPDQ").textContent
+
+        //remove first and last character
+        correctAnswer = correctAnswer.substring(1, correctAnswer.length - 1);
+
+        let textField = this.constructor.getElementsByDataTest("challenge-text-input")[0];
+        window.getReactElement(textField)?.pendingProps?.onChange({ target: { value: correctAnswer } });
     }
 
     async solveListenIsolation() {
@@ -120,13 +133,8 @@ class DuolingoChallenge {
     }
 
     writeTextInSpace() {
-        let textField = this.constructor.getElementsByDataTest("challenge-translate-input")[0];
-        if(!textField) parent.getElementsByClassName("_1eJKW _16r-S _29cJe")[0].click();
-
         let bestSolution = this.challengeInfo.challengeResponseTrackingProperties.best_solution;
-        textField = this.constructor.getElementsByDataTest("challenge-translate-input")[0]
-        
-
+        let textField = this.constructor.getElementsByDataTest("challenge-translate-input")[0];
         window.getReactElement(textField)?.pendingProps?.onChange({ target: { value: bestSolution } });
     }
 
