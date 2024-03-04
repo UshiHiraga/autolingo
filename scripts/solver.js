@@ -109,11 +109,28 @@ class DuolingoChallenge {
             case "completeReverseTranslation":
                 this.solveFromNearbyElements();
                 break;
+            case "partialReverseTranslate":
+                this.solveFromNearbyElementsButForPartialReverseTranslate();
+                break;
 
             default:
                 alert("Unknown problem type: " + this.challengeType);
                 throw new Error(this.challengeType)
         }
+    }
+    solveFromNearbyElementsButForPartialReverseTranslate() {
+        let correctAnswer = parent.document.querySelector("._31xxw._2eX9t._1vqO5").textContent
+        let inputElement = parent.document.querySelector("._1N3bb._2kuqe._2eX9t._1eYfv._29omP");
+        inputElement.textContent = correctAnswer;
+    
+        // Create a new 'input' event
+        let event = new Event('input', {
+            bubbles: true,
+            cancelable: true,
+        });
+    
+        // Dispatch the event
+        inputElement.dispatchEvent(event);
     }
 
     solveFromNearbyElements() {
