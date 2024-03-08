@@ -223,8 +223,7 @@ class DuolingoChallenge {
         const dataTextByChallengeType = {
             "translate": "challenge-translate-input",
             "listenTap": "challenge-translate-input",
-            "transliterate": "challenge-text-input",
-            "reverse_translate": "challenge-translate-input",
+            "transliterate": "challenge-text-input"
         }
 
         let dataTest = dataTextByChallengeType[this.challengeType];
