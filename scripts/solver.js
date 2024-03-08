@@ -7,7 +7,7 @@ class DuolingoChallenge {
     static get isKeyboardEnabled() {
         // Parent object contains several information about current duolingo status;
         let parentObject = window.getReactElement(document.querySelector(".mQ0GW")).return.return.pendingProps.challengeToggleState;
-        return (parentObject.isToggledToTyping)
+        return (parentObject.canToggleTyping && parentObject.isToggledToTyping)
     }
 
     static getElementsByDataTest(dataTest, parent = window.document) {
