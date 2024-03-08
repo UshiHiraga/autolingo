@@ -198,11 +198,6 @@ class DuolingoChallenge {
         await sleep();
     }
 
-    async solveFromCorrectIndicies() {
-        let correctIndex = this.challengeInfo.correctIndices;
-        await sleep();
-    }
-
     solveWriteTextInSomeTextFieldTypeProblems() {
         // This method inserts a text inside some valid text field.
         // It uses "data-test" attribute to identify the text field.
