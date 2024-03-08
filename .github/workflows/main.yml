@@ -16,11 +16,11 @@ jobs:
               uses: actions/checkout@v3
 
             - name: Remove extra files and especific git folders
-              run: rm -rf README.md TODO.md LICENSE .git .github
+              run: rm -rf README.md LICENSE .git .github
 
             - name: Get actual date for version name.
               id: actual-date
-              run: echo "DATE=$(date +'%Y.%m.%d')" >> $GITHUB_OUTPUT
+              run: echo "DATE=$(date +'%Y.%-m.%d')" >> $GITHUB_OUTPUT
 
             - name: Replace version name in manifest.json
               run: sed -i 's/12345/${{ steps.actual-date.outputs.DATE }}/g' manifest.json
@@ -32,7 +32,7 @@ jobs:
               id: create-release
               uses: actions/create-release@v1
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  GITHUB_TOKEN: 
               with:
                   tag_name: ${{ steps.actual-date.outputs.DATE }}
                   release_name: Version ${{ steps.actual-date.outputs.DATE }}
@@ -41,11 +41,9 @@ jobs:
                   owner: ${{ github.actor }}
 
             - name: Upload assets for release
-              uses: actions/upload-release-asset@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              uses: svenstaro/upload-release-action@v2
               with:
-                  upload_url: ${{ steps.create-release.outputs.upload_url }}
-                  asset_path: ./autolingo-extension-zip.zip
+                  repo_token: ${{ secrets.GITHUB_TOKEN }}
+                  file: ./autolingo-extension-zip.zip
                   asset_name: autolingo.zip
-                  asset_content_type: application/zip
+                  tag: ${{ steps.actual-date.outputs.DATE }}
