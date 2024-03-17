@@ -2,7 +2,7 @@
 // It execute all the solver related code.
 
 window.addEventListener("DuolingoRefresh", function (e) {
-    const possiblePageLikeTerms = ["lesson", "practice", "alphabets"];
+    const possiblePageLikeTerms = ["lesson", "practice", "alphabets", "placement"];
     if (window.activeInterval) { window.clearInterval(window.activeInterval); delete window.activeInterval }
     if (!possiblePageLikeTerms.some((t) => e.detail.path.includes(t))) return true;
 
@@ -67,6 +67,7 @@ window.addEventListener("LessonStatusChanged", async function (e) {
         case "CAPSTONE_REVIEW_SPLASH":
         case "COACH_DUO_SPLASH":
         case "VISIBLE_PERSONALIZATION_SPLASH":
+        case "PLACEMENT_SPLASH":
             if (document.location.search.includes("autosolve")) { await sleep(); DuolingoChallenge.clickButtonContinue() };
             break;
 
@@ -75,6 +76,7 @@ window.addEventListener("LessonStatusChanged", async function (e) {
         case "HARD_MODE_DUO_SLIDING":
         case "SUBMITTING":
         case "PARTIAL_XP_DUO_SLIDING":
+        case "GRADING":
             console.logger("Waiting...");
             break;
 
