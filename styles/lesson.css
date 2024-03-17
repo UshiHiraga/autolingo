@@ -16,6 +16,12 @@ div._2nDUm._2LO8p:has(button.autolingo-autosolve) {
     grid-template-columns: repeat(3, min-content) 1fr min-content;
 }
 
+div._2nDUm._3gWuI:has(button.autolingo-autosolve) {
+    /* Top info bar with three hearts. */
+    /* path: unit_test */
+    grid-template-columns: repeat(2, min-content) 1fr min-content;
+}
+
 div.YQ0lZ._3e9O1 div.hiddeable {
     display: none;
 }
