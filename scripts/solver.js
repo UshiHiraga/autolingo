@@ -75,6 +75,10 @@ class DuolingoChallenge {
             case "match":
                 await this.solveCharacterMatch();
                 break;
+            
+            case "tapComplete":
+                await this.solveCorrectIndicesTypeProblems();
+            break;
 
             case "read_comprehension":
             case "translate":
@@ -196,6 +200,16 @@ class DuolingoChallenge {
         let dataTest = dataTestByChallengeType[this.challengeType];
         this.constructor.getElementsByDataTest(dataTest)[correctIndex].click();
         await sleep();
+    }
+    
+    async solveCorrectIndicesTypeProblems(){
+        let solutions = this.challengeInfo.correctIndices;
+        let wordBank = document.querySelector("._2n18_");
+        let options = this.constructor.getElementsByDataTest("challenge-tap-token-text", wordBank);
+        for (let i = 0; i < solutions.length; i++){
+            options[solutions[i]].click();
+            await sleep();
+        }
     }
 
     solveWriteTextInSomeTextFieldTypeProblems() {
