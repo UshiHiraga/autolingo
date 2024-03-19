@@ -60,6 +60,8 @@ class DuolingoChallenge {
     // Methods for solving the problems.
     async solve() {
         switch (this.challengeType) {
+            case "dialogue":
+            case "readComprehension":
             case "characterIntro":
             case "characterSelect":
             case "selectPronunciation":
@@ -75,7 +77,12 @@ class DuolingoChallenge {
             case "match":
                 await this.solveCharacterMatch();
                 break;
+            
+            case "tapComplete":
+                await this.solveCorrectIndicesTypeProblems();
+            break;
 
+            case "read_comprehension":
             case "translate":
             case "listenTap":
                 this.constructor.isKeyboardEnabled ? this.solveWriteTextInSomeTextFieldTypeProblems() : await this.solveTapTextTypeProblems();
@@ -96,16 +103,91 @@ class DuolingoChallenge {
                 console.logger("Waiting for user interaction");
                 break;
 
+            case "listenComprehension":
+            case "listenIsolation":
+                await this.solveListenIsolation();
+                break;
+
+            case "listen":
+                this.writeTextInSpace();
+                break;
+
+            case "listenComplete":
+            case "completeReverseTranslation":
+                this.solveFromNearbyElements();
+                break;
+            case "partialReverseTranslate":
+                this.solveFromNearbyElementsButForPartialReverseTranslate();
+                break;
+
+            //TODO: This is only commented because I don't have any problem to test it with
+            // case "typeCloze":
+            //     this.solveFromNearbyElementsButForTypeCloze();
+            //     break;
+
             default:
                 alert("Unknown problem type: " + this.challengeType);
                 throw new Error(this.challengeType)
         }
     }
+    solveFromNearbyElementsButForPartialReverseTranslate() {
+        let correctAnswer = parent.document.querySelector("._31xxw._2eX9t._1vqO5").textContent
+        let inputElement = parent.document.querySelector("._1N3bb._2kuqe._2eX9t._1eYfv._29omP");
+        inputElement.textContent = correctAnswer;
+    
+        // Create a new 'input' event
+        let event = new Event('input', {
+            bubbles: true,
+            cancelable: true,
+        });
+    
+        // Dispatch the event
+        inputElement.dispatchEvent(event);
+    }
+
+    solveFromNearbyElementsButForTypeCloze() {
+        let correctAnswer = parent.document.querySelector(".caPDQ").textContent
+        //remove first character
+        correctAnswer = correctAnswer.substring(1, correctAnswer.length);
+        let inputElement = parent.document.querySelector(".Y5JxA._17nEt");
+        inputElement.textContent = correctAnswer;
+
+        // Create a new 'input' event
+        let event = new Event('input', {
+            bubbles: true,
+            cancelable: true,
+        });
+
+        // Dispatch the event
+        inputElement.dispatchEvent(event);
+    } 
+
+    solveFromNearbyElements() {
+        let correctAnswer = parent.document.querySelector(".caPDQ").textContent
+
+        //remove first and last character
+        correctAnswer = correctAnswer.substring(1, correctAnswer.length - 1);
+
+        let textField = this.constructor.getElementsByDataTest("challenge-text-input")[0];
+        window.getReactElement(textField)?.pendingProps?.onChange({ target: { value: correctAnswer } });
+    }
+
+    async solveListenIsolation() {
+        let correctIndex = this.challengeInfo.correctIndex;
+        let correctButton = parent.document.querySelectorAll("._3C_oC")[correctIndex];
+        correctButton.click();
+        await sleep();
+    }
+
+    writeTextInSpace() {
+        let bestSolution = this.challengeInfo.challengeResponseTrackingProperties.best_solution;
+        let textField = this.constructor.getElementsByDataTest("challenge-translate-input")[0];
+        window.getReactElement(textField)?.pendingProps?.onChange({ target: { value: bestSolution } });
+    }
 
     async solveSelectCorrectIndexTypeProblems() {
         // This method clicks the correct button from an array of possible buttons.
         // It uses the "data-test" attribute to identify possible buttons.
-
         const dataTestByChallengeType = {
             "characterIntro": "challenge-judge-text",
             "characterSelect": "challenge-choice",
@@ -113,6 +195,8 @@ class DuolingoChallenge {
             "select": "challenge-choice",
             "assist": "challenge-choice",
             "gapFill": "challenge-choice",
+            "dialogue": "challenge-choice",
+            "readComprehension": "challenge-choice",
             "reverseAssist": "challenge-choice",
             "transliterationAssist": "challenge-choice"
         }
@@ -121,6 +205,16 @@ class DuolingoChallenge {
         let dataTest = dataTestByChallengeType[this.challengeType];
         this.constructor.getElementsByDataTest(dataTest)[correctIndex].click();
         await sleep();
+    }
+    
+    async solveCorrectIndicesTypeProblems(){
+        let solutions = this.challengeInfo.correctIndices;
+        let wordBank = document.querySelector("._2n18_");
+        let options = this.constructor.getElementsByDataTest("challenge-tap-token-text", wordBank);
+        for (let i = 0; i < solutions.length; i++){
+            options[solutions[i]].click();
+            await sleep();
+        }
     }
 
     solveWriteTextInSomeTextFieldTypeProblems() {
@@ -135,6 +229,7 @@ class DuolingoChallenge {
                     return this.challengeInfo.prompt;
 
                 case "reverse_tap":
+                case "reverse_translate":
                 case "transliterate":
                     return this.challengeInfo.correctSolutions[0];
 
