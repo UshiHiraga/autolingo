@@ -66,6 +66,8 @@ class DuolingoChallenge {
             case "select":
             case "assist":
             case "gapFill":
+            case "reverseAssist":
+            case "transliterationAssist":
                 this.solveSelectCorrectIndexTypeProblems();
                 break;
 
@@ -89,6 +91,7 @@ class DuolingoChallenge {
                 break;
 
             case "characterTrace":
+            case "characterWrite":
                 alert("The extension can't solve this problem. Please do it manually and we'll be able to continue.");
                 console.logger("Waiting for user interaction");
                 break;
@@ -109,7 +112,9 @@ class DuolingoChallenge {
             "selectPronunciation": "challenge-choice",
             "select": "challenge-choice",
             "assist": "challenge-choice",
-            "gapFill": "challenge-choice"
+            "gapFill": "challenge-choice",
+            "reverseAssist": "challenge-choice",
+            "transliterationAssist": "challenge-choice"
         }
 
         let correctIndex = this.challengeInfo.correctIndex;
