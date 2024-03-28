@@ -82,7 +82,12 @@ window.addEventListener("LessonStatusChanged", async function (e) {
             break;
 
         case "END_CAROUSEL":
-            if (document.location.search.includes("repeat")) { await sleep(); location.reload() };
+            const urlObject = new URL(document.location);
+            if (urlObject.search.includes("repeat")) { 
+                const value = urlObject.searchParams.get("repeat");
+                if(!value || isNaN(Number(value))){ await sleep(); location.reload() };
+                if(Number(value) > 0){ await sleep(); location.assign(location.pathname + "?autosolve&repeat=" + (Number(value) - 1)) };
+            };
             break;
 
         default:
