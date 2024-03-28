@@ -3,10 +3,12 @@
 Autolingo is an extension that completes Duolingo lessons so you don't have to. This extension only works on Chromium-based browsers.
 
 ## How to install?
+If you use Microsoft Edge browser, you can get it directly from the [store](https://microsoftedge.microsoft.com/addons/detail/hnhddnligjlbndgedcfodgegblanijdl).
 
+Else, you'll have to:
 1. Go to [latest release](https://github.com/UshiHiraga/autolingo/releases) and download zip file.
-2. Open the "Manage extensions" page on your browser and turn on "Developer mode"
-3. Drag and drop `autolingo.zip` into the "Manage Extensions" page.
+3. Open the "Manage extensions" page on your browser and turn on "Developer mode"
+4. Drag and drop `autolingo.zip` into the "Manage Extensions" page.
 
 ## How do I use this?
 1. Go to Duolingo and try to solve any lesson.
