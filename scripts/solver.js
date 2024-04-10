@@ -6,7 +6,7 @@ class DuolingoChallenge {
 
     static get isKeyboardEnabled() {
         // Parent object contains several information about current duolingo status;
-        let parentObject = window.getReactElement(document.querySelector(".mQ0GW")).return.return.pendingProps.challengeToggleState;
+        let parentObject = window.getReactElement(document.querySelector("._1RBqm")).return.pendingProps.challengeToggleState;	
         return (parentObject.canToggleTyping && parentObject.isToggledToTyping)
     }
 
@@ -269,7 +269,7 @@ class DuolingoChallenge {
         // It uses the "._33Jbm" class to identify possible buttons.
         let solutionPairs = this.challengeInfo.pairs;
         for (let pair of solutionPairs) {
-            let optionNodes = Array.from(document.querySelectorAll("._1deIS button:not(._33Jbm)"));
+            let optionNodes = Array.from(document.querySelectorAll(".vOrcA button:not(._33Jbm)"));
             let pairsNodeText = this.extractTextFromNodes(optionNodes);
 
             pairsNodeText[pair.fromToken ?? pair.transliteration].click();
