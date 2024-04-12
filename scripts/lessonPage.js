@@ -9,7 +9,7 @@ window.addEventListener("DuolingoRefresh", function (e) {
     // Watch the change in the status of the challenge.
     let prevLessonStatus = undefined;
     window.activeInterval = window.setInterval(function () {
-        let currentStatus = window.getReactElement(document.querySelector("._3x0ok"))?.return?.stateNode?.props?.player?.status;
+        let currentStatus = window.getReactElement(document.querySelector("._1RBqm"))?.return?.stateNode?.props?.player?.status;
         if (prevLessonStatus === currentStatus) return;
 
         prevLessonStatus = currentStatus;
@@ -23,7 +23,7 @@ window.addEventListener("LessonStatusChanged", async function (e) {
     switch (e.detail.currentStatus) {
         case "GUESSING":
             async function handleSolve() {
-                let challengeInternalInfo = window.getReactElement(document.querySelector(".mQ0GW")).return.return.stateNode.props.currentChallenge;
+                let challengeInternalInfo = window.getReactElement(document.querySelector("._1RBqm")).return.stateNode.props.currentChallenge;
                 let currentChallange = new DuolingoChallenge(challengeInternalInfo);
                 currentChallange.printDebugInfo();
 
@@ -37,19 +37,19 @@ window.addEventListener("LessonStatusChanged", async function (e) {
             }
 
             // Insert button for autosolve lesson.
-            const progressBarContainer = document.querySelector("div._2nDUm");
+            const progressBarContainer = document.querySelector("div._3IUli");
             if (!progressBarContainer["autolingo_solve_button_inserted"]) {
                 console.logger("Button inserted");
-                let button = window.createNodeFromText(/*html*/`<button class="_2l-C- _2kfEr _1nlVc _2fOC9 UCrz7 t5wFJ autolingo-autosolve" title="Start autosolving" />`);
+                let button = window.createNodeFromText(/*html*/`<button class="_7X9XV bafGS _2LoNU VzbUl _1saKQ _1AgKJ autolingo-autosolve" title="Start autosolving" />`);
                 button.addEventListener("click", handleAutosolveRequest);
                 progressBarContainer.insertBefore(button, progressBarContainer.querySelector("div[role='progressbar']"));
                 progressBarContainer["autolingo_solve_button_inserted"] = true;
             };
 
             // Insert button for solve this problem.
-            const footer = document.querySelector("div._3FAc4._2T5D2");
-            const buttonContainer = document.querySelector("div._2XF-t") ?? footer.insertBefore(window.createNodeFromText(`<div class="_2XF-t hiddeable"></div>`), footer.firstElementChild);
-            let solveButton = window.createNodeFromText(`<button class="_1N-oo _36Vd3 _16r-S J51YJ U1P3s autolingo-solve"><span class="_1fHYG">Solve</span></button>`);
+            const footer = document.querySelector("div._3T4XR._3S6W5");
+            const buttonContainer = document.querySelector("div._23KDq") ?? footer.firstElementChild.insertBefore(window.createNodeFromText(`<div class="_23KDq hiddeable"></div>`), footer.firstElementChild.firstElementChild);
+            let solveButton = window.createNodeFromText(`<button class="_1N-oo _36Vd3 _16r-S rzju1 _2W2Lz autolingo-solve"><span class="_1fHYG">Solve</span></button>`);
             solveButton.addEventListener("click", handleSolve);
             if (!document.location.pathname.includes("legendary") || !progressBarContainer["solve_button_inserted"]) {
                 buttonContainer.appendChild(solveButton);

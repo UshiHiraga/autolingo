@@ -1,28 +1,28 @@
-div._2nDUm:has(button.autolingo-autosolve) {
+div._3IUli:has(button.autolingo-autosolve) {
     /* Top info bar with no hearts nor extra buttons */
     /* path: alphabets */
     grid-template-columns: repeat(2, min-content) 1fr;
 }
 
-div._2nDUm._3FHOg:has(button.autolingo-autosolve) {
+div._3IUli.JIlmf:has(button.autolingo-autosolve) {
     /* Top info bar with visible hearts. */
     /* path: lesson, legendary */
     grid-template-columns: repeat(3, min-content) 1fr min-content;
 }
 
-div._2nDUm._2LO8p:has(button.autolingo-autosolve) {
+div._3IUli._3a8RJ:has(button.autolingo-autosolve) {
     /* Top info bar with no hearts. */
     /* path: practice */
     grid-template-columns: repeat(3, min-content) 1fr min-content;
 }
 
-div._2nDUm._3gWuI:has(button.autolingo-autosolve) {
+div._3IUli.HE-2A:has(button.autolingo-autosolve) {
     /* Top info bar with three hearts. */
     /* path: unit_test */
     grid-template-columns: repeat(2, min-content) 1fr min-content;
 }
 
-div.YQ0lZ._3e9O1 div.hiddeable {
+div._8Tgfo div.hiddeable {
     display: none;
 }
 
