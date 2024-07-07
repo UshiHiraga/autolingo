@@ -4,7 +4,8 @@
 let prevCourse = null;
 let prevTab = null;
 setInterval(function () {
-    const pageData = window.getReactElement(document.querySelector("._3BJQ_"))?.return?.return?.return?.memoizedProps;
+    const parentNode = document.querySelector("#root > div:nth-child(2) > div > div:nth-child(2)");
+    const pageData = window.getReactElement(parentNode)?.return?.return?.return?.memoizedProps;
     const tab = pageData?.activeTab ?? "unknown";
     const course = pageData?.courses?.find((e) => e.isCurrent)?.courseId;
 
