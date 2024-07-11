@@ -9,7 +9,8 @@ window.addEventListener("DuolingoRefresh", function (e) {
     // Watch the change in the status of the challenge.
     let prevLessonStatus = undefined;
     window.activeInterval = window.setInterval(function () {
-        let currentStatus = window.getReactElement(document.querySelector("._1RBqm"))?.return?.stateNode?.props?.player?.status;
+        const lessonNode = document.querySelector("#root > div > div");
+        let currentStatus = window.getReactElement(lessonNode)?.return?.stateNode?.props?.player?.status;
         if (prevLessonStatus === currentStatus) return;
 
         prevLessonStatus = currentStatus;
@@ -23,7 +24,8 @@ window.addEventListener("LessonStatusChanged", async function (e) {
     switch (e.detail.currentStatus) {
         case "GUESSING":
             async function handleSolve() {
-                let challengeInternalInfo = window.getReactElement(document.querySelector("._1RBqm")).return.stateNode.props.currentChallenge;
+                const lessonNode = document.querySelector("#root > div > div");
+                let challengeInternalInfo = window.getReactElement(lessonNode).return.stateNode.props.currentChallenge;
                 let currentChallange = new DuolingoChallenge(challengeInternalInfo);
                 currentChallange.printDebugInfo();
 
@@ -37,23 +39,40 @@ window.addEventListener("LessonStatusChanged", async function (e) {
             }
 
             // Insert button for autosolve lesson.
-            const progressBarContainer = document.querySelector("div._3IUli");
+            const progressBarContainer = document.querySelector("button[data-test='quit-button']").parentNode;
+
+            // Classes for styling
+            progressBarContainer.classList.add("autolingo-progress-bar");
+            let className = document.location.pathname.includes("test") ? "unit_test" : document.location.pathname.split("/").at(1);
+            progressBarContainer.classList.add(className);
+
             if (!progressBarContainer["autolingo_solve_button_inserted"]) {
-                console.logger("Button inserted");
-                let button = window.createNodeFromText(/*html*/`<button class="_7X9XV bafGS _2LoNU VzbUl _1saKQ _1AgKJ autolingo-autosolve" title="Start autosolving" />`);
+                let button = document.querySelector("button[data-test='quit-button']").cloneNode(true);
+                button.classList.add("autolingo-autosolve");
+                button.removeAttribute("data-test");
+                button.setAttribute("title", "Start autosolving");
                 button.addEventListener("click", handleAutosolveRequest);
                 progressBarContainer.insertBefore(button, progressBarContainer.querySelector("div[role='progressbar']"));
                 progressBarContainer["autolingo_solve_button_inserted"] = true;
+                console.logger("Button inserted");
             };
 
             // Insert button for solve this problem.
-            const footer = document.querySelector("div._3T4XR._3S6W5");
-            const buttonContainer = document.querySelector("div._23KDq") ?? footer.firstElementChild.insertBefore(window.createNodeFromText(`<div class="_23KDq hiddeable"></div>`), footer.firstElementChild.firstElementChild);
-            let solveButton = window.createNodeFromText(`<button class="_1N-oo _36Vd3 _16r-S rzju1 _2W2Lz autolingo-solve"><span class="_1fHYG">Solve</span></button>`);
-            solveButton.addEventListener("click", handleSolve);
-            if (!document.location.pathname.includes("legendary") || !progressBarContainer["solve_button_inserted"]) {
-                buttonContainer.appendChild(solveButton);
-                progressBarContainer["solve_button_inserted"] = true;
+            const footer = document.getElementById("session/PlayerFooter");
+            footer.classList.add("autolingo-footer-div");
+            footer.classList.add(className);
+            if (!footer["autolingo_solve_button_inserted"]) {
+                let checkButtonSection = footer.querySelector("div").querySelector("div");
+                let button = checkButtonSection.querySelector("button").cloneNode(true);
+    
+                button.childNodes[0].innerText = "Solve"
+                button.getAttribute("data-test") === "player-next" ? button.classList.remove(button.classList[0]) : null;
+                button.classList.add("autolingo-solve");
+                button.addEventListener("click", handleSolve);
+                checkButtonSection.appendChild(button);    
+
+                //footer["autolingo_solve_button_inserted"] = true;
+                console.logger("Footer button was inserted");
             }
 
             if (document.location.search.includes("autosolve")) { await sleep(); handleSolve() };
