@@ -80,9 +80,6 @@ class DuolingoChallenge {
                 break;
             
             case "tapComplete":
-                await this.solveCorrectIndicesTypeProblems();
-            break;
-
             case "read_comprehension":
             case "translate":
             case "listenTap":
@@ -210,7 +207,7 @@ class DuolingoChallenge {
     
     async solveCorrectIndicesTypeProblems(){
         let solutions = this.challengeInfo.correctIndices;
-        let wordBank = document.querySelector("._2n18_");
+        let wordBank = this.constructor.getElementsByDataTest("word-bank")[0];
         let options = this.constructor.getElementsByDataTest("challenge-tap-token-text", wordBank);
         for (let i = 0; i < solutions.length; i++){
             options[solutions[i]].click();
@@ -254,10 +251,12 @@ class DuolingoChallenge {
         // This method clicks the correct button from an array of possible buttons in the order required.
         // It uses the "._3CBig" class to identify possible buttons.
 
-        let correctTokens = this.challengeInfo.correctTokens ?? this.challengeInfo.prompt.split("");
+        let correctTokens = this.challengeInfo.correctTokens ?? this.challengeInfo.prompt.split("") ?? this.challengeInfo.correctIndices;
         let wordBank = this.constructor.getElementsByDataTest("word-bank")[0];
+        let buttonUnpressedClasses = wordBank.querySelector("button").classList.toString();
         for (let token of correctTokens) {
-            let avaibleButtons = Array.from(wordBank.querySelectorAll("._3CBig"));
+            let allPossibleButtons = Array.from(wordBank.querySelectorAll("button"));
+            let avaibleButtons = allPossibleButtons.filter((e) => e.classList.toString() === buttonUnpressedClasses);
             let tokensText = this.extractTextFromNodes(avaibleButtons);
 
             tokensText[token].click();
@@ -267,10 +266,14 @@ class DuolingoChallenge {
 
     async solveCharacterMatch() {
         // This method clicks the correct button from two arrays of possible buttons in the order required.
-        // It uses the "._33Jbm" class to identify possible buttons.
+        // It uses the "._33Jbm" class to identify possible buttons.x
+        let optionsContainer = document.querySelector("div[data-test*='challenge'] > div > div > div");
+        let buttonUnpressedClasses = optionsContainer.querySelector("button").classList.toString();
+
         let solutionPairs = this.challengeInfo.pairs;
         for (let pair of solutionPairs) {
-            let optionNodes = Array.from(document.querySelectorAll(".vOrcA button:not(._33Jbm)"));
+            let allOptionsNodes = Array.from(optionsContainer.querySelectorAll("span"));
+            let optionNodes = allOptionsNodes.filter((e) => e.classList.toString() === buttonUnpressedClasses);
             let pairsNodeText = this.extractTextFromNodes(optionNodes);
 
             pairsNodeText[pair.fromToken ?? pair.transliteration].click();
